@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: 244 250 255;
+  --card: 255 255 255;
+  --text: 15 23 42;
+  --accent: 180 83 9;
+}
+
+html, body { height: 100%; }
+
+body {
+  background: rgb(var(--bg));
+  color: rgb(var(--text));
+  font-feature-settings: "ss01" on, "ss02" on;
+}
+
+*::-webkit-scrollbar { width: 10px; }
+*::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.15); border-radius: 20px; }
+*::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.04); }
+/* Luxury scrollbar for horizontal table scrolling */
+.luxe-scroll::-webkit-scrollbar {
+  height: 6px; /* 👈 thin horizontal scrollbar */
+  width: 2px;
+}
+
+.luxe-scroll::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.04);
+  border-radius: 999px;
+}
+
+.luxe-scroll::-webkit-scrollbar-thumb {
+  background: rgba(15, 23, 42, 0.18);
+  border-radius: 999px;
+}
+
+.luxe-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 23, 42, 0.28);
+}
