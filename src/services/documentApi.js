@@ -23,4 +23,4 @@ export const documentApi = {
   }
 };
 
-//Updated baseurl
+//Updated baseurl path
