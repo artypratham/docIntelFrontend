@@ -16,6 +16,7 @@ export default function DocumentIntelligencePage() {
   const [docId, setDocId] = useState(null);
 
   const [fields, setFields] = useState([{ name: "", description: "", type: "string" }]);
+  const [batchExtraction, setBatchExtraction] = useState(false);
 
   const [isUploading, setIsUploading] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
@@ -81,7 +82,7 @@ export default function DocumentIntelligencePage() {
     setExtractionResult(null);
 
     try {
-      const data = await documentApi.extract(docId, schema);
+      const data = await documentApi.extract(docId, schema, batchExtraction);
       const extraction = data?.extraction;
 
       // Backend can return partial results (some fields null/not_found) with HTTP 200 — that's OK.
@@ -107,6 +108,7 @@ export default function DocumentIntelligencePage() {
     setUploadedFile(null);
     setDocId(null);
     setFields([{ name: "", description: "", type: "string" }]);
+    setBatchExtraction(false);
     setExtractionResult(null);
     setError(null);
   }
@@ -144,6 +146,8 @@ export default function DocumentIntelligencePage() {
           <FieldBuilder
             fields={fields}
             setFields={setFields}
+            batchExtraction={batchExtraction}
+            setBatchExtraction={setBatchExtraction}
             canExtract={Boolean(docId)}
             isExtracting={isExtracting}
             onExtract={onExtract}

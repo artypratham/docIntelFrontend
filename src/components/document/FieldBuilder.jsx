@@ -5,7 +5,15 @@ import Button from "../shared/Button.jsx";
 import Input from "../shared/Input.jsx";
 import Select from "../shared/Select.jsx";
 
-export default function FieldBuilder({ fields, setFields, canExtract, isExtracting, onExtract }) {
+export default function FieldBuilder({
+  fields,
+  setFields,
+  batchExtraction,
+  setBatchExtraction,
+  canExtract,
+  isExtracting,
+  onExtract
+}) {
   const [jsonInput, setJsonInput] = useState("");
   const [jsonError, setJsonError] = useState(null);
   const [jsonSuccess, setJsonSuccess] = useState(null);
@@ -36,8 +44,12 @@ export default function FieldBuilder({ fields, setFields, canExtract, isExtracti
     try {
       const parsed = JSON.parse(jsonInput);
       
-      // Handle the extraction_schema wrapper
-      const schema = parsed.schema || parsed;
+      // Support multiple wrappers:
+      // - Swagger-style: { schema: {...}, batch_extraction: true/false }
+      // - Older: { extraction_schema: {...} }
+      // - Raw schema: { type: "object", properties: {...} }
+      const schema = parsed.schema || parsed.extraction_schema || parsed;
+      const importedBatch = parsed.batch_extraction === true;
       
       if (!schema.properties || typeof schema.properties !== "object") {
         setJsonError("Invalid schema: 'properties' object not found");
@@ -64,6 +76,7 @@ export default function FieldBuilder({ fields, setFields, canExtract, isExtracti
       }
 
       setFields(newFields);
+      if (importedBatch) setBatchExtraction(true);
       setJsonInput("");
       setJsonError(null);
       setJsonSuccess(`Successfully imported ${newFields.length} field${newFields.length !== 1 ? 's' : ''}`);
@@ -88,6 +101,54 @@ export default function FieldBuilder({ fields, setFields, canExtract, isExtracti
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
             Provide name + description so the model extracts precisely.
           </p>
+        </div>
+      </div>
+
+      <div className="mb-6 rounded-3xl border border-slate-200 bg-white/70 p-4 sm:p-5">
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2">
+              <p className="text-sm font-semibold text-slate-900">Extraction Mode</p>
+              <span
+                className={[
+                  "inline-flex items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold",
+                  batchExtraction
+                    ? "border-amber-200 bg-amber-50 text-amber-900"
+                    : "border-slate-200 bg-white text-slate-700"
+                ].join(" ")}
+              >
+                {batchExtraction ? "Faster" : "Accurate"}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">
+              Batch extraction is faster, single-field is usually more accurate.
+            </p>
+          </div>
+
+          <label className="inline-flex items-center gap-3 select-none">
+            <span className="text-xs font-medium text-slate-700">
+              {batchExtraction ? "Faster" : "Accurate"}
+            </span>
+            <button
+              type="button"
+              onClick={() => setBatchExtraction((v) => !v)}
+              className={[
+                "relative inline-flex h-6 w-11 items-center rounded-full transition-colors",
+                "focus:outline-none focus:ring-2 focus:ring-amber-200 focus:ring-offset-2 focus:ring-offset-white",
+                batchExtraction ? "bg-slate-900" : "bg-slate-200"
+              ].join(" ")}
+              role="switch"
+              aria-checked={batchExtraction}
+              aria-label={`Toggle extraction mode (currently ${batchExtraction ? "Faster" : "Accurate"})`}
+            >
+              <span
+                className={[
+                  "inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform",
+                  batchExtraction ? "translate-x-5" : "translate-x-1"
+                ].join(" ")}
+              />
+            </button>
+          </label>
         </div>
       </div>
 
