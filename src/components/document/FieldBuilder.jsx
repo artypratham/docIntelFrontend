@@ -43,13 +43,14 @@ export default function FieldBuilder({
 
     try {
       const parsed = JSON.parse(jsonInput);
-      
+
       // Support multiple wrappers:
       // - Swagger-style: { schema: {...}, batch_extraction: true/false }
       // - Older: { extraction_schema: {...} }
       // - Raw schema: { type: "object", properties: {...} }
       const schema = parsed.schema || parsed.extraction_schema || parsed;
-      const importedBatch = parsed.batch_extraction === true;
+      const importedBatch = parsed.batch_extraction;
+      const importedBatchF = parsed.batchExtraction === false;
       
       if (!schema.properties || typeof schema.properties !== "object") {
         setJsonError("Invalid schema: 'properties' object not found");
@@ -76,7 +77,11 @@ export default function FieldBuilder({
       }
 
       setFields(newFields);
-      if (importedBatch) setBatchExtraction(true);
+
+      // If JSON explicitly specifies batch_extraction, mirror it on the toggle
+      if (typeof importedBatch === "boolean") {
+        setBatchExtraction(importedBatch);
+      }
       setJsonInput("");
       setJsonError(null);
       setJsonSuccess(`Successfully imported ${newFields.length} field${newFields.length !== 1 ? 's' : ''}`);
