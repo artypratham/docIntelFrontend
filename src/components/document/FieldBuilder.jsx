@@ -37,7 +37,7 @@ export default function FieldBuilder({ fields, setFields, canExtract, isExtracti
       const parsed = JSON.parse(jsonInput);
       
       // Handle the extraction_schema wrapper
-      const schema = parsed.extraction_schema || parsed;
+      const schema = parsed.schema || parsed;
       
       if (!schema.properties || typeof schema.properties !== "object") {
         setJsonError("Invalid schema: 'properties' object not found");
@@ -197,7 +197,7 @@ export default function FieldBuilder({ fields, setFields, canExtract, isExtracti
                   setJsonError(null);
                   setJsonSuccess(null);
                 }}
-                placeholder='Paste your JSON schema here...\n\nExample format:\n{\n  "extraction_schema": {\n    "type": "object",\n    "properties": { ... }\n  }\n}'
+                placeholder='Paste your JSON schema here...\n\nExample format:\n{\n  "schema": {\n    "type": "object",\n    "properties": { ... }\n  }\n}'
                 className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-300 transition-all font-mono resize-none leading-relaxed"
                 rows={14}
               />

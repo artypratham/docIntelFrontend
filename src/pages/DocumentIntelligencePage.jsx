@@ -34,6 +34,17 @@ export default function DocumentIntelligencePage() {
     })();
   }, []);
 
+  function hasAnyExtractedValue(extraction) {
+    if (!extraction || typeof extraction !== "object") return false;
+
+    return Object.values(extraction).some((v) => {
+      if (v === null || v === undefined) return false;
+      if (typeof v === "string") return v.trim().length > 0;
+      // numbers/booleans/objects count as present
+      return true;
+    });
+  }
+
   async function onUpload(file) {
     setUploadedFile(file);
     setIsUploading(true);
@@ -71,6 +82,19 @@ export default function DocumentIntelligencePage() {
 
     try {
       const data = await documentApi.extract(docId, schema);
+      const extraction = data?.extraction;
+
+      // Backend can return partial results (some fields null/not_found) with HTTP 200 — that's OK.
+      // Only show an error popup if the FINAL 200 response contains no extracted values at all.
+      if (!hasAnyExtractedValue(extraction)) {
+        setError({
+          message:
+            "Extraction finished, but no fields could be extracted from this document. Try refining field descriptions or uploading a clearer PDF."
+        });
+        setExtractionResult(null);
+        return;
+      }
+
       setExtractionResult(data);
     } catch (err) {
       setError({ message: err.message });
@@ -108,8 +132,8 @@ export default function DocumentIntelligencePage() {
         </div>
       )}
 
-      <div className="grid lg:grid-cols-2 gap-6">
-        <div className="space-y-6">
+      <div className="grid lg:grid-cols-12 gap-6">
+        <div className="space-y-6 lg:col-span-7 xl:col-span-8">
           <DocumentUploader
             uploadedFile={uploadedFile}
             isUploading={isUploading}
@@ -126,7 +150,9 @@ export default function DocumentIntelligencePage() {
           />
         </div>
 
-        <ExtractionResults isExtracting={isExtracting} extractionResult={extractionResult} />
+        <div className="lg:col-span-5 xl:col-span-4">
+          <ExtractionResults isExtracting={isExtracting} extractionResult={extractionResult} />
+        </div>
       </div>
     </PageShell>
   );
