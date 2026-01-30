@@ -47,17 +47,17 @@ export default function FieldBuilder({
       // Support multiple wrappers:
       // - Swagger-style: { schema: {...}, batch_extraction: true/false }
       // - Older: { extraction_schema: {...} }
-      // - Raw schema: { type: "object", properties: {...} }
-      const schema = parsed.schema || parsed.extraction_schema || parsed;
+      // - Raw extraction_schema: { type: "object", properties: {...} }
+      const extraction_schema = parsed.schema || parsed.extraction_schema || parsed;
       const importedBatch = parsed.batch_extraction;
       const importedBatchF = parsed.batchExtraction === false;
       
-      if (!schema.properties || typeof schema.properties !== "object") {
-        setJsonError("Invalid schema: 'properties' object not found");
+      if (!extraction_schema.properties || typeof extraction_schema.properties !== "object") {
+        setJsonError("Invalid extraction_schema: 'properties' object not found");
         return;
       }
 
-      const newFields = Object.entries(schema.properties).map(([name, config]) => {
+      const newFields = Object.entries(extraction_schema.properties).map(([name, config]) => {
         // Handle format field - if format is "date", use "date" type
         let fieldType = config.type || "string";
         if (config.format === "date" && fieldType === "string") {
@@ -72,7 +72,7 @@ export default function FieldBuilder({
       });
 
       if (newFields.length === 0) {
-        setJsonError("No fields found in the schema");
+        setJsonError("No fields found in the extraction_schema");
         return;
       }
 
@@ -263,7 +263,7 @@ export default function FieldBuilder({
                   setJsonError(null);
                   setJsonSuccess(null);
                 }}
-                placeholder='Paste your JSON schema here...\n\nExample format:\n{\n  "schema": {\n    "type": "object",\n    "properties": { ... }\n  }\n}'
+                placeholder='Paste your JSON schema here...\n\nExample format:\n{\n  "extraction_schema": {\n    "type": "object",\n    "properties": { ... }\n  }\n}'
                 className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-xs sm:text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-300 transition-all font-mono resize-none leading-relaxed"
                 rows={14}
               />
