@@ -70,7 +70,7 @@ export default function DocumentIntelligencePage() {
       return;
     }
 
-    const { schema, validFields } = buildJsonSchema(fields);
+    const { extraction_schema, validFields } = buildJsonSchema(fields);
 
     if (validFields.length === 0) {
       setError({ message: "Add at least one field with name + description." });
@@ -82,7 +82,7 @@ export default function DocumentIntelligencePage() {
     setExtractionResult(null);
 
     try {
-      const data = await documentApi.extract(docId, schema, batchExtraction);
+      const data = await documentApi.extract(docId, extraction_schema, batchExtraction);
       const extraction = data?.extraction;
 
       // Backend can return partial results (some fields null/not_found) with HTTP 200 — that's OK.
