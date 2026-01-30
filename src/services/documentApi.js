@@ -14,11 +14,11 @@ export const documentApi = {
     });
   },
 
-  extract: async (docId, schema, batchExtraction = false) => {
+  extract: async (docId, extraction_schema, batchExtraction = false) => {
     return apiFetch(`${ENV.API_BASE_URL}/documents/${docId}/extract`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ schema, batch_extraction: Boolean(batchExtraction) })
+      body: JSON.stringify({ extraction_schema, batch_extraction: Boolean(batchExtraction) })
     });
   }
 };

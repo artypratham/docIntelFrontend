@@ -45,10 +45,9 @@ export default function FieldBuilder({
       const parsed = JSON.parse(jsonInput);
 
       // Support multiple wrappers:
-      // - Swagger-style: { schema: {...}, batch_extraction: true/false }
-      // - Older: { extraction_schema: {...} }
+      // - Swagger-style: { extraction_schema: {...}, batch_extraction: true/false }
       // - Raw extraction_schema: { type: "object", properties: {...} }
-      const extraction_schema = parsed.schema || parsed.extraction_schema || parsed;
+      const extraction_schema = parsed.extraction_schema || parsed.extraction_schema || parsed;
       const importedBatch = parsed.batch_extraction;
       const importedBatchF = parsed.batchExtraction === false;
       
